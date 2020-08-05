@@ -54,9 +54,12 @@ export default {
         // 这里 resultObj[key] 为空， 所以不能和上面的else一样直接访问属性timeKey，会报错，
         // 所以分两步 { timeObj: { 2020: ['02'] } }
         // item[timeKey] = { [`${timeArr[0]}`]: [timeArr[1]] }
-        resultObj[key] = { ...item, 'timeObjArr': { [`${timeArr[0]}`]: [timeArr[1]] }}
-        resultObj[key] = { ...resultObj[key], 'reason': '分成款' }
-        resultObj[key] = { ...resultObj[key], idList: [{ id: item.id }] }
+        resultObj[key] = {
+          ...item,
+          'timeObjArr': { [`${timeArr[0]}`]: [timeArr[1]] },
+          'reason': '分成款',
+          'idList': [{ id: item.id }]
+        }
       }
     })
     console.log(resultObj)
