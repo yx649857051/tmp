@@ -34,42 +34,45 @@ export default {
     // 临时收集结果对象
     const resultObj = {}
     // 时间年月收集key
-    const timeKey = 'timeObjArr'
+    // const timeKey = 'timeObjArr'
     data.list.forEach(item => {
       // 两个id 联合起来作为唯一key, 保证不会重复
       const key = `${item.cusCompanyId}_${item.ourCompanyId}`
-      const timeArr = item.settlementPeriod.split('/')
+      const date = new Date(item.settlementPeriod)
+      const timeArr = [date.getFullYear(), date.getMonth() + 1]
       if (resultObj[key]) {
-        if (resultObj[key][timeKey]) {
-          if (resultObj[key][timeKey][`${timeArr[0]}`]) {
-            // 追加值 { timeObjArr: { 2020: ['02', '03'] } }
-            resultObj[key][timeKey][`${timeArr[0]}`].push(timeArr[1])
-          } else {
-            // 追加新属性2021 { timeObjArr: { 2021: ['02'] } }
-            resultObj[key][timeKey][`${timeArr[0]}`] = [timeArr[1]]
-          }
+        if (resultObj[key]['timeObjArr'] && resultObj[key]['timeObjArr'][`${timeArr[0]}`]) {
+          // 追加值 { timeObjArr: { 2020: ['02', '03'] } }
+          resultObj[key]['timeObjArr'][`${timeArr[0]}`].push(timeArr[1])
         } else {
-          // 添加对象 { 2020: ['02'] }
-          resultObj[key][timeKey] = { [`${timeArr[0]}`]: [timeArr[1]] }
+          // 追加新属性2021 { timeObjArr: { 2021: ['02'] } }
+          resultObj[key]['timeObjArr'][`${timeArr[0]}`] = [timeArr[1]]
         }
+        resultObj[key].amount += item.amount
+        resultObj[key].idList.push({ id: item.id })
       } else {
         // 这里 resultObj[key] 为空， 所以不能和上面的else一样直接访问属性timeKey，会报错，
-        // 所以分两步
-        item[timeKey] = { [`${timeArr[0]}`]: [timeArr[1]] }
-        resultObj[key] = item
+        // 所以分两步 { timeObj: { 2020: ['02'] } }
+        // item[timeKey] = { [`${timeArr[0]}`]: [timeArr[1]] }
+        resultObj[key] = { ...item, 'timeObjArr': { [`${timeArr[0]}`]: [timeArr[1]] }}
+        resultObj[key] = { ...resultObj[key], 'reason': '分成款' }
+        resultObj[key] = { ...resultObj[key], idList: [{ id: item.id }] }
       }
     })
+    console.log(resultObj)
     const newList = Object.keys(resultObj).map(key => {
       // 删除属性， 这个属性没啥意义了
       // delete resultObj[key].settlementPeriod
       // 去重复月, {2020: ['02', '02'], 2021: ['03']}
-      const yearObj = resultObj[key][timeKey]
+      const yearObj = resultObj[key]['timeObjArr']
       Object.keys(yearObj).forEach(yearKey => {
         yearObj[yearKey] = [...new Set(yearObj[yearKey])]
       })
       return resultObj[key]
     })
     console.log(newList)
+
+    this.tableData = newList
   },
   methods: {
 
@@ -81,6 +84,7 @@ export default {
 
 </style>
 
+
 //================================= 数据 ==========================================
 {
   "list":[
@@ -90,7 +94,8 @@ export default {
       "ourCompanyId": "2000",
       "cusCompanyName": "百度科技",
       "ourCompanyName": "欧珀科技",
-      "settlementPeriod": "2020/02"
+      "settlementPeriod": 1596668255000,
+      "amount": 3000
     },
     {
       "id": "yx2",
@@ -98,7 +103,8 @@ export default {
       "ourCompanyId": "2000",
       "cusCompanyName": "百度科技",
       "ourCompanyName": "欧珀科技",
-      "settlementPeriod": "2020/03"
+      "settlementPeriod": 1599346655000,
+      "amount": 3000
     },
     {
       "id": "yx3",
@@ -106,7 +112,8 @@ export default {
       "ourCompanyId": "2001",
       "cusCompanyName": "百度科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": "2021/03"
+      "settlementPeriod": 1599346655000,
+      "amount": 3000
     },
     {
       "id": "yx4",
@@ -114,7 +121,8 @@ export default {
       "ourCompanyId": "2000",
       "cusCompanyName": "阿里科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": "2020/08"
+      "settlementPeriod": 1599346655000,
+      "amount": 3000
     },
     {
       "id": "yx5",
@@ -122,7 +130,8 @@ export default {
       "ourCompanyId": "2000",
       "cusCompanyName": "阿里科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": "2020/08"
+      "settlementPeriod": 1599346655000,
+      "amount": 3000
     },
     {
       "id": "yx6",
@@ -130,7 +139,8 @@ export default {
       "ourCompanyId": "2000",
       "cusCompanyName": "阿里科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": "2021/08"
+      "settlementPeriod": 1604617055000,
+      "amount": 3000
     }
   ]
 }
