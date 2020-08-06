@@ -147,7 +147,7 @@
       "ourCompanyId": "2000",
       "cusCompanyName": "百度科技",
       "ourCompanyName": "欧珀科技",
-      "settlementPeriod": 1599346655000,
+      "settlementPeriod": 1628179200000,
       "amount": 3000
     },
     {
@@ -156,7 +156,7 @@
       "ourCompanyId": "2001",
       "cusCompanyName": "百度科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": 1599346655000,
+      "settlementPeriod": 1630857600000,
       "amount": 3000
     },
     {
@@ -165,7 +165,7 @@
       "ourCompanyId": "2000",
       "cusCompanyName": "阿里科技",
       "ourCompanyName": "欧珀科技1",
-      "settlementPeriod": 1599346655000,
+      "settlementPeriod": 1636128000000,
       "amount": 3000
     },
     {
@@ -184,6 +184,15 @@
       "cusCompanyName": "阿里科技",
       "ourCompanyName": "欧珀科技1",
       "settlementPeriod": 1604617055000,
+      "amount": 3000
+    },
+    {
+      "id": "yx7",
+      "cusCompanyId": "1001",
+      "ourCompanyId": "2000",
+      "cusCompanyName": "阿里科技",
+      "ourCompanyName": "欧珀科技1",
+      "settlementPeriod": 1607184000000,
       "amount": 3000
     }
   ]
