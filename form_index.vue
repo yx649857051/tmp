@@ -1,23 +1,9 @@
 <template>
   <div class="app-container">
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="cusCompanyName"
-        label="对方公司"
-        width="180"
-      />
-      <el-table-column
-        prop="ourCompanyName"
-        label="我方公司"
-        width="180"
-      />
-      <el-table-column
-        prop="reason"
-        label="备注"
-      />
+    <el-table :data="tableData" style="width: 100%;">
+      <el-table-column prop="cusCompanyName" label="对方公司" width="180" />
+      <el-table-column prop="ourCompanyName" label="我方公司" width="180" />
+      <el-table-column prop="reason" label="备注" />
     </el-table>
   </div>
 </template>
@@ -27,7 +13,7 @@ import data from './data.json'
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
     }
   },
   mounted() {
@@ -35,15 +21,22 @@ export default {
     const resultObj = {}
     // 时间年月收集key
     // const timeKey = 'timeObjArr'
-    data.list.forEach(item => {
+    data.list.forEach((item) => {
       // 两个id 联合起来作为唯一key, 保证不会重复
       const key = `${item.cusCompanyId}_${item.ourCompanyId}`
       const date = new Date(item.settlementPeriod)
       const timeArr = [date.getFullYear(), date.getMonth() + 1]
       if (resultObj[key]) {
-        if (resultObj[key]['timeObjArr'] && resultObj[key]['timeObjArr'][`${timeArr[0]}`]) {
+        if (
+          resultObj[key]['timeObjArr'] &&
+          resultObj[key]['timeObjArr'][`${timeArr[0]}`]
+        ) {
           // 追加值 { timeObjArr: { 2020: ['02', '03'] } }
           resultObj[key]['timeObjArr'][`${timeArr[0]}`].push(timeArr[1])
+          // 这里可能会有重复的月份加进来，去重
+          resultObj[key]['timeObjArr'][`${timeArr[0]}`] = [
+            ...new Set(resultObj[key]['timeObjArr'][`${timeArr[0]}`]),
+          ]
         } else {
           // 追加新属性2021 { timeObjArr: { 2021: ['02'] } }
           resultObj[key]['timeObjArr'][`${timeArr[0]}`] = [timeArr[1]]
@@ -56,37 +49,25 @@ export default {
         // item[timeKey] = { [`${timeArr[0]}`]: [timeArr[1]] }
         resultObj[key] = {
           ...item,
-          'timeObjArr': { [`${timeArr[0]}`]: [timeArr[1]] },
-          'reason': '分成款',
-          'idList': [{ id: item.id }]
+          timeObjArr: { [`${timeArr[0]}`]: [timeArr[1]] },
+          reason: '分成款',
+          idList: [{ id: item.id }],
         }
       }
     })
     console.log(resultObj)
-    const newList = Object.keys(resultObj).map(key => {
-      // 删除属性， 这个属性没啥意义了
-      // delete resultObj[key].settlementPeriod
-      // 去重复月, {2020: ['02', '02'], 2021: ['03']}
-      const yearObj = resultObj[key]['timeObjArr']
-      Object.keys(yearObj).forEach(yearKey => {
-        yearObj[yearKey] = [...new Set(yearObj[yearKey])]
-      })
-      return resultObj[key]
-    })
+    // 收集的对象转成集合， 去掉属性保留value
+    const newList = Object.keys(resultObj).map((key) => resultObj[key])
     console.log(newList)
-
     this.tableData = newList
   },
-  methods: {
-
-  }
+  methods: {},
 }
 </script>
 
 <style scoped>
 
 </style>
-
 
 //================================= 数据 ==========================================
 {
