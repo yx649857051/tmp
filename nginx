@@ -1,31 +1,31 @@
-upstream production_server {
-  server 10.55.195.103:8080;
-  server 10.55.195.104:8080;
-  server 10.55.195.105:8080;
-  #server bdx.myoas.com;
+upstream dev_server {
+  server 10.176.2.182:8080;
 }
-
+upstream dev_interface_platform_server {
+  server 10.177.94.45:8080;
+}
 server {
   listen 8080;     # 端口号不要小于1024
-  server_name bdx.myoas.com;
+
+  server_name bdx-dev.myoas.com;
+
   location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|webp|tiff?|woff|woff2|mp3|m4a|aac|ogg|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
     expires max;
   }
 
   location = /admin {
-    return 301 $scheme://bdx.myoas.com$request_uri/;
+    return 301 $scheme://bdx-dev.myoas.com$request_uri/;
     add_header Cache-Control no-store;
   }
-
   location ^~ /admin/ {
     alias /home/service/app/da-portalmgr-front/dist/;
-    expires -1;
+    expires 30d;
   }
 
   #其它直接转发到业务后端
-  location ^~ /bdx {
+   location ^~ /ds-api {
     proxy_buffering off;
-    proxy_pass         http://production_server;  #业务ng地址
+    proxy_pass         http://dev_interface_platform_server   ;  #业务ng地址
     proxy_http_version 1.1;
     proxy_set_header Connection "";
     proxy_set_header Host   $host;
@@ -33,6 +33,15 @@ server {
     proxy_set_header X-Forwarded-For $remote_addr;
   }
 
+  location /bdx {
+    proxy_buffering off;
+    proxy_pass         http://dev_server   ;  #业务ng地址
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header Host   $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+  }
   gzip on;
   gzip_types text/plain text/css text/xml application/javascript application/rss+xml application/atom+xml image/svg+xml;
 }
