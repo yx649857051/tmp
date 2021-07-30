@@ -1,0 +1,38 @@
+function test1(options, obj) {
+  /// tmpLevel 给一个初始值，便于记录递归层级
+  /// first 是否代表第一次进入递归
+  if (obj.tmpLevel == undefined || obj.first == undefined) {
+    obj.tmpLevel = 0;
+    obj.first = true;
+  }
+  if (obj.first && obj.tmpLevel >= obj.level) {
+    options.unshift({
+      text: '不限',
+      value: '000'
+    });
+  }
+  obj.first = false;
+  obj.tmpLevel++;
+  const tmp = options.map(element => {
+    if (element.children) {
+      if (obj.tmpLevel >= obj.level) {
+        element.children.unshift({
+          text: '不限',
+          value: element.value
+        });
+      }
+      test1(element.children, obj)
+    }
+    return element;
+  });
+  obj.tmpLevel--;
+  return tmp;
+}
+
+/**
+ * level 大于level 的层级会被加上 “不限”
+ */
+const data = test1(options, {
+  level: 0
+})
+console.log(JSON.stringify(data, null, 4))
